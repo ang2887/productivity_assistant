@@ -1,0 +1,4 @@
+psycopg2==2.9.10
+streamlit==1.39.0
+llama_cpp_python==0.3.1
+python-dotenv==1.0.1
