@@ -21,3 +21,6 @@ scratchpad.ipynb
 # Models directory (optional, if your model is too large)
 models/
 llama.cpp/
+
+productivity_assistant.egg-info/
+
