@@ -1,0 +1,23 @@
+# Ignore environment files
+.env
+.DS_Store
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE and editor files
+.vscode/
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Scratchpad and notebooks
+scratchpad.ipynb
+
+# Models directory (optional, if your model is too large)
+models/
+llama.cpp/
