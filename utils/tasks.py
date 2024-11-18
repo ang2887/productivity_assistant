@@ -31,7 +31,7 @@ def add_task(cursor, conn, description, priority, due_date=None, completed = Fal
 
 # retrieve task from the database
 def get_tasks(cursor):
-    cursor.execute('select id, description, priority, due_date, completed from tasks order by priority;')
+    cursor.execute('select id, description, priority, due_date, completed from tasks order by due_date is Null, due_date, priority;')
     return cursor.fetchall()
 
 def generate_task_list(input_text, model):
