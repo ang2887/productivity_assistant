@@ -18,6 +18,8 @@ productivity_assistant/
 │   └── tasks.py                 # Task-related functions (e.g., add, get tasks)
 ├── env/                         # Virtual environment (usually ignored by .gitignore)
 ├── llama.cpp/                   # Model-related files
+│   └── models/                  
+│       └── llama-2-7b-chat.Q4_K_M.gguf  # LLaMA model file
 └── scratchpad.ipynb             # Jupyter notebook for testing and scratch work
 ```
 
