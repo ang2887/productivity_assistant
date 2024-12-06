@@ -1,8 +1,6 @@
-# Ignore environment files
+# Environment files
 .env
-.DS_Store
 .env.docker
-env/
 
 # Python cache
 __pycache__/
@@ -19,9 +17,6 @@ __pycache__/
 # Scratchpad and notebooks
 scratchpad.ipynb
 
-# Models directory (optional, if the model is too large)
+# Models directory (optional, if the  model is too large)
 models/
 llama.cpp/
-
-# Egg-info
-productivity_assistant.egg-info/

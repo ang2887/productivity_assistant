@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8501:8501"
+    env_file: 
+      - .env.docker
+    # Mount the models directory for the app
+    volumes:
+      - ./llama.cpp/models:/app/llama.cpp/models
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    env_file:
+      - .env.docker 
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./create_tasks_table.sql:/docker-entrypoint-initdb.d/create_tasks_table.sql
+
+volumes:
+  db_data:
+
+# don't change port on .env.docker

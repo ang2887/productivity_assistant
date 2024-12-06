@@ -1,4 +1,4 @@
-
+# tasks.py 2
 
 # add task to the database
 def add_task(cursor, conn, description, priority, due_date=None, completed = False):
@@ -15,6 +15,7 @@ def add_task(cursor, conn, description, priority, due_date=None, completed = Fal
     """
     cursor.execute(query, (description, priority, due_date,completed))
     existing_task = cursor.fetchone()
+
     if existing_task:
         return existing_task[0] , False  
     try:
@@ -28,7 +29,6 @@ def add_task(cursor, conn, description, priority, due_date=None, completed = Fal
         conn.rollback()
         print('Error adding task:', e)
         return None, False
-
 # retrieve task from the database
 def get_tasks(cursor):
     cursor.execute('select id, description, priority, due_date, completed from tasks order by due_date is Null, due_date, priority;')
