@@ -1,6 +1,6 @@
 # productivity_assistant
 
-A simple productivity assistant using LLaMA and Streamlit for managing tasks.
+A simple productivity assistant built using LLaMA and Streamlit for managing tasks, with optional Docker support for easy setup and deployment.
 
 ## Python Version
 - Python 3.11.4
@@ -20,8 +20,34 @@ Since the model file (llama-2-7b-chat.Q4_K_M.gguf, 4.08 GB) is large, it’s rec
 - Set up a postgresql database (e.g., `productivity_db`).
 - Run the sql schema file `create_tasks_table.sql` in pgAdmin4 (or any sql editor).
 
-## Starting the streamlit app
-To start the streamlit app:
+## Starting the Streamlit app locally (without Docker)
+Run the app with:
 ```
 streamlit run app_streamlit.py
 ```
+## Using Docker for Setup and Deployment
+This project supports Docker for simplified setup and deployment. The `Dockerfile` and `docker-compose.yml` are provided for containerized execution.
+
+### Steps to Use Docker:
+1. **Build and Start the Application:**
+   ```
+   docker-compose up --build
+   ```
+This command will build the Docker image and start the application along with a PostgreSQL database container.
+
+2.	**Stop the Application:**
+```
+docker-compose down
+```
+3.	**Access the Streamlit Application:**
+Open your browser and navigate to: http://localhost:8501
+
+4.	**Database Configuration with Docker:**
+The PostgreSQL database runs in a Docker container.
+Connection string example: postgresql://assistant_user:password@db:5432/productivity_db
+
+
+
+
+
+
