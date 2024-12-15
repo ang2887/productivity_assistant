@@ -1,12 +1,16 @@
-# app_streamlit.py 10
+# app_streamlit.py 27l 
 
 import os
 from dotenv import load_dotenv
 from utils.database_connection import get_db_connection
 from utils.model_loader import load_llama_model
-from utils.tasks import add_task, get_tasks
+from utils.tasks import add_task, get_tasks, get_incomplete_tasks, generate_witty_reminders
 import streamlit as st
 from datetime import date
+import numpy as np
+import pandas as pd
+from st_aggrid import AgGrid
+from streamlit_autorefresh import st_autorefresh
 
 # Load environment variables
 load_dotenv()
@@ -14,23 +18,14 @@ load_dotenv()
 # Determine paths based on environment
 if os.getenv('IS_DOCKER', '0') == '1':
     model_path = os.getenv('MODEL_PATH_DOCKER')
-    database_url = os.getenv('DATABASE_URL_DOCKER')
 else:
     model_path = os.getenv('MODEL_PATH_LOCAL')
-    database_url = os.getenv('DATABASE_URL_LOCAL')
 
 if not model_path or not os.path.exists(model_path):
     raise FileNotFoundError(f"Model path does not exist: {model_path}")
 
-# Cached model loader
-@st.cache_resource
-def cached_model():
-    if not model_path or not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model path does not exist: {model_path}")
-    return load_llama_model(model_path)
-
-# Load the cached model
-model = cached_model()
+# Load the Llama model
+model = load_llama_model(model_path)
 
 # Streamlit App UI
 st.title("Task Management App")
@@ -38,16 +33,20 @@ st.title("Task Management App")
 # Add Task Section
 st.header("Add a New Task")
 description = st.text_input("Task Description")
-priority = st.number_input("Priority", min_value=1, max_value=5, value=1)
-due_date = st.date_input("Due Date (optional)")
-completed = st.checkbox("Completed")
+priority = st.number_input("Priority", min_value=1, max_value=3)
+include_due_date = st.checkbox("Set Due Date")
+
+if include_due_date:
+    due_date = st.date_input("Due Date")
+else:
+    due_date = None
 
 if st.button("Add Task"):
+    conn, cursor = get_db_connection()
     try:
-        conn, cursor = get_db_connection()
-        task_id, is_new = add_task(cursor, conn, description, priority, due_date, completed)
+        task_id, is_new = add_task(cursor, conn, description.strip(), priority, due_date, False)
         conn.commit()
-        conn.close()  # Close the connection
+
         if task_id is None:
             st.error("Error adding task. Please try again.")
         elif is_new:
@@ -56,19 +55,40 @@ if st.button("Add Task"):
             st.info(f"Task already exists with ID: {task_id}")
     except Exception as e:
         st.error(f"Error adding task: {e}")
+    finally:
+        conn.close()
 
 # Show All Tasks Section
 st.header("All Tasks")
+conn, cursor = get_db_connection()
 try:
-    conn, cursor = get_db_connection()
     tasks = get_tasks(cursor)
-    conn.close()  
+
     if tasks:
-        for task in tasks:
-            st.write(
-                f"ID: {task[0]}, Description: {task[1]}, Priority: {task[2]}, Due Date: {task[3]}, Completed: {task[4]}"
-            )
+        df = pd.DataFrame(tasks, columns=["ID", "Description", "Priority", "Due Date", "Completed"])
+        df["Due Date"] = pd.to_datetime(df["Due Date"], errors="coerce").dt.strftime("%d-%b-%Y")
+        AgGrid(df)
     else:
         st.write("No tasks available.")
 except Exception as e:
     st.error(f"Error fetching tasks: {e}")
+finally:
+    conn.close()
+
+# Reminder Section
+st.header("Reminders for Pending Tasks")
+
+conn, cursor = get_db_connection()
+try:
+    incomplete_tasks = get_incomplete_tasks(cursor)
+
+    if incomplete_tasks:
+        reminders = generate_witty_reminders(incomplete_tasks, model)
+        for line in reminders.split("\n"):
+            st.write(line)
+    else:
+        st.write("🎉 No pending tasks! Relax and enjoy!")
+except Exception as e:
+    st.error(f"Error fetching reminders: {e}")
+finally:
+    conn.close()

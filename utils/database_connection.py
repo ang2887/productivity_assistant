@@ -1,19 +1,16 @@
-# database_connection.py 4
+# database_connection.py 6
 
 import os
 from dotenv import load_dotenv
 import psycopg2
-import logging 
-
-
-logging.basicConfig(level=logging.DEBUG)  # Add this at the top
 
 def get_db_connection():
-    logging.debug("Attempting to connect to the database...")
+    print("Connecting to the database...")
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
-    logging.debug("Database connection established.")
+    print("Database connection established.")
     return conn, conn.cursor()
 
+# Load environment variables
 load_dotenv()
 
 database_url = (
@@ -23,19 +20,18 @@ database_url = (
 )
 
 if not database_url:
-    raise ValueError('no database url found')
-print(f'using database url: {database_url}')
+    raise ValueError('No database URL found')
+print(f"Using database URL: {database_url}")
 
 os.environ['DATABASE_URL'] = database_url
 
-def get_db_connection():
-    conn = psycopg2.connect(os.getenv('DATABASE_URL'))
-    return conn, conn.cursor()
-
+# Test the connection
 try:
     conn, cursor = get_db_connection()
     cursor.execute('SELECT 1;')
-    print('database connected successfully')
+    print("Database connected successfully")
     conn.close()
 except Exception as e:
-    print(f'database connection failed: {e}')    
+    print(f"Database connection failed: {e}")
+
+    
