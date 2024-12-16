@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
+# set Docker environment variable
+ENV IS_DOCKER=1
+
 # copy requirements files first for Docker caches the dependency installation layer separately.
 COPY requirements.txt /app/
 

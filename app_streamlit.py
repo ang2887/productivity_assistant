@@ -6,11 +6,8 @@ from utils.database_connection import get_db_connection
 from utils.model_loader import load_llama_model
 from utils.tasks import add_task, get_tasks, get_incomplete_tasks, generate_witty_reminders
 import streamlit as st
-from datetime import date
-import numpy as np
 import pandas as pd
 from st_aggrid import AgGrid
-from streamlit_autorefresh import st_autorefresh
 
 # Load environment variables
 load_dotenv()
